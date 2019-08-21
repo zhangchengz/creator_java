@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.tlf.creatorcourse.dao.taskexperiment.TaskScoreMapper">
+
+    <resultMap id="BaseResultMap" type="com.tlf.creatorcourse.entity.taskexperiment.TaskScore">
+        <id column="id" property="id" jdbcType="VARCHAR"/>
+        <result column="created_at" property="createdAt" jdbcType="TIMESTAMP"/>
+        <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP"/>
+        <result column="deleted_at" property="deletedAt" jdbcType="TIMESTAMP"/>
+        <result column="account_id" property="accountId" jdbcType="VARCHAR"/>
+        <result column="task_experiment_id" property="taskExperimentId" jdbcType="VARCHAR"/>
+        <result column="score" property="score" jdbcType="DOUBLE"/>
+        <result column="comment" property="comment" jdbcType="LONGVARCHAR"/>
+        <result column="completed" property="completed" jdbcType="BIT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    id, created_at, updated_at, deleted_at, account_id, task_experiment_id, score, comment,completed
+  </sql>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from task_score
+        where deleted_at is null and id = #{id,jdbcType=VARCHAR}
+    </select>
+
+    <select id="selectByAccountAndTask" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from task_score
+        where deleted_at is null and account_id=#{accountId} and task_experiment_id = #{taskExperimentId}
+    </select>
+
+    <select id="selectByTask" resultMap="BaseResultMap" parameterType="java.lang.String">
+        select
+        <include refid="Base_Column_List"/>
+        from task_score
+        where deleted_at is null and task_experiment_id = #{taskExperimentId}
+    </select>
+
+    <update id="deleteByPrimaryKey" parameterType="java.lang.String">
+    update  task_score set deleted_at = now()
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+    <insert id="insert" parameterType="com.tlf.creatorcourse.entity.taskexperiment.TaskScore">
+    insert into task_score (id, created_at, updated_at, deleted_at, account_id, task_experiment_id, score, comment,completed)
+    values (#{id,jdbcType=VARCHAR}, now(), now(), null, #{accountId,jdbcType=VARCHAR}, #{taskExperimentId,jdbcType=VARCHAR},
+      #{score,jdbcType=DOUBLE}, #{comment,jdbcType=LONGVARCHAR},#{completed})
+  </insert>
+
+    <update id="updateByAccountAndTask" parameterType="com.tlf.creatorcourse.entity.taskexperiment.TaskScore">
+    update task_score set score = #{score,jdbcType=DOUBLE},comment = #{comment,jdbcType=LONGVARCHAR}
+    where account_id=#{accountId} and task_experiment_id = #{taskExperimentId}
+  </update>
+
+    <update id="completedTask">
+      update task_score set completed = 1 where account_id=#{accountId} and task_experiment_id = #{taskExperimentId}
+    </update>
+
+</mapper>

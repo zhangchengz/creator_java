@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tlf.creatorcourse.dao.taskexperiment.ExperimentProjectMapper" >
+
+  <resultMap id="BaseResultMap" type="com.tlf.creatorcourse.entity.taskexperiment.ExperimentProject" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    <result column="deleted_at" property="deletedAt" jdbcType="TIMESTAMP" />
+    <result column="task_experiment_id" property="taskExperimentId" jdbcType="VARCHAR" />
+    <result column="submitter_id" property="submitterId" jdbcType="VARCHAR" />
+    <result column="sim_id" property="simId" jdbcType="VARCHAR" />
+    <result column="scene_path" property="scenePath" jdbcType="VARCHAR" />
+    <result column="sim_path" property="simPath" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    id, created_at, updated_at, deleted_at, task_experiment_id, submitter_id, sim_id, 
+    scene_path, sim_path
+  </sql>
+
+  <select id="selectBySimId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from task_experiment_projects
+    where sim_id = #{simId,jdbcType=VARCHAR} and task_experiment_id = #{taskExperimentId} and submitter_id = #{submitterId}
+  </select>
+
+  <select id="selectById" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from task_experiment_projects
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <update id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    update task_experiment_projects set deleted_at = now()
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <insert id="insert" parameterType="com.tlf.creatorcourse.entity.taskexperiment.ExperimentProject" >
+    insert into task_experiment_projects (id, created_at, updated_at, deleted_at, task_experiment_id, submitter_id, sim_id, scene_path, sim_path)
+    values (#{id,jdbcType=VARCHAR}, now(), now(),
+      null, #{taskExperimentId,jdbcType=VARCHAR}, #{submitterId,jdbcType=VARCHAR},
+      #{simId,jdbcType=VARCHAR}, #{scenePath,jdbcType=VARCHAR}, #{simPath,jdbcType=VARCHAR})
+  </insert>
+
+  <update id="updateProjectTime">
+    update task_experiment_projects set updated_at = now()
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <update id="updateByPrimaryKey" parameterType="com.tlf.creatorcourse.entity.taskexperiment.ExperimentProject" >
+    update task_experiment_projects
+    set created_at = #{createdAt,jdbcType=TIMESTAMP},
+      updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      deleted_at = #{deletedAt,jdbcType=TIMESTAMP},
+      task_experiment_id = #{taskExperimentId,jdbcType=VARCHAR},
+      submitter_id = #{submitterId,jdbcType=VARCHAR},
+      sim_id = #{simId,jdbcType=VARCHAR},
+      scene_path = #{scenePath,jdbcType=VARCHAR},
+      sim_path = #{simPath,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

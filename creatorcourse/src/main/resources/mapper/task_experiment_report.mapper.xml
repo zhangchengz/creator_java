@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tlf.creatorcourse.dao.taskexperiment.TaskExperimentReportsMapper">
+    <resultMap id="TaskExperimentReportsResultMap" type="com.tlf.creatorcourse.entity.TaskExperimentReports">
+        <id property="id" column="id" javaType="java.lang.String"/>
+        <result property="createdAt" column="created_at" javaType="java.sql.Timestamp"/>
+        <result property="updatedAt" column="updated_at" javaType="java.sql.Timestamp"/>
+        <result property="deletedAt" column="deleted_at" javaType="java.sql.Timestamp"/>
+        <result property="taskExperimentId" column="task_experiment_id" javaType="java.lang.String"/>
+        <result property="submitterId" column="submitter_id" javaType="java.lang.String"/>
+        <result property="resourceId" column="resource_id" javaType="java.lang.String"/>
+        <result property="score" column="score" javaType="java.lang.Float"/>
+        <result property="comment" column="comment" javaType="java.lang.String"/>
+        <result property="remark" column="remark" javaType="java.lang.String"/>
+        <result property="annexId" column="annex_id" javaType="java.lang.String"/>
+        <result property="projectId" column="project_id" javaType="java.lang.String"/>
+        <result property="status" column="status" javaType="java.lang.String"/>
+    </resultMap>
+
+    <insert id="addTaskExperimentReport">
+        insert into task_experiment_reports(id, created_at, updated_at, deleted_at, task_experiment_id, submitter_id,resource_id,score,comment,
+        remark, annex_id,project_id,status)
+        VALUES (#{id},now(),now(),null,#{taskExperimentId},#{submitterId},#{resourceId},#{score},#{comment},#{remark},#{annexId},#{projectId},#{status})
+    </insert>
+
+    <select id="queryTaskExperimentReport" resultMap="TaskExperimentReportsResultMap">
+        select id, created_at, updated_at, task_experiment_id, submitter_id,resource_id,score,comment,
+        remark, annex_id,project_id,status from task_experiment_reports
+        where task_experiment_id = #{taskExperimentId} and deleted_at is null limit #{offset},#{limit}
+    </select>
+
+    <update id="updateTaskExperimentReportStatus">
+        update task_experiment_reports set updated_at=now(),resource_id=null,remark = #{remark},annex_id =#{annexId},project_id =#{projectId},status =#{status} where id = #{id};
+    </update>
+
+    <update id="resetTaskExperimentReport">
+        update task_experiment_reports set resource_id = null, remark = null,annex_id = null,project_id = null,status ='reset' where id = #{id};
+    </update>
+
+    <select id="queryTaskExperimentReportBySubmitter" resultMap="TaskExperimentReportsResultMap">
+        select id, created_at, updated_at, task_experiment_id, submitter_id,resource_id,score,comment,
+        remark, annex_id,project_id,status from task_experiment_reports
+        where task_experiment_id = #{taskExperimentId} and submitter_id = #{submitterId} and deleted_at is null;
+    </select>
+
+    <select id="queryTaskExperimentReportById" resultMap="TaskExperimentReportsResultMap">
+        select id, created_at, updated_at, task_experiment_id, submitter_id,resource_id,score,comment,
+        remark, annex_id,project_id,status from task_experiment_reports
+        where id = #{id} and deleted_at is null;
+    </select>
+
+    <update id="updateTaskExperimentReportById">
+        update task_experiment_reports set updated_at=now(),score=#{score},comment=#{comment},status='approved' where id = #{id}
+    </update>
+
+    <select id="queryTotalTaskExperimentReportByTaskId" resultType="java.lang.Integer">
+        select count(*) from task_experiment_reports
+        where task_experiment_id = #{taskExperimentId} and deleted_at is null;
+    </select>
+
+</mapper>
