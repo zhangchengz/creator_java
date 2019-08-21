@@ -1,0 +1,28 @@
+logging:
+  config: classpath:log4j2.yml
+#  config: classpath:log4j2-prod.yml
+
+server:
+  port: 9005
+spring:
+  application:
+    name: creator-consumer
+  servlet:
+    multipart:
+      max-file-size: 100MB
+      max-request-size: 100MB
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://cubespace:CubeSpace.2015@127.0.0.1:20000/eureka/
+#      defaultZone: http://cubespace:CubeSpace.2015@app.asp0755.com:20000/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+
+cubespace:
+  uploadTempPath: /Volumes/MyDisk/temp/
+  restReadTimeout: 30000
+  restConnectTimeout: 30000
+
+

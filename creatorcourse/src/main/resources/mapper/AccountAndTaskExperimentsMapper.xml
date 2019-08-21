@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.tlf.creatorcourse.dao.taskexperiment.AccountAndTaskExperimentsMapper" >
+
+  <resultMap id="BaseResultMap" type="com.tlf.creatorcourse.entity.taskexperiment.AccountAndTaskExperiments" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    <result column="deleted_at" property="deletedAt" jdbcType="TIMESTAMP" />
+    <result column="account_id" property="accountId" jdbcType="VARCHAR" />
+    <result column="task_experiment_id" property="taskExperimentId" jdbcType="VARCHAR" />
+    <result column="statu" property="statu" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    id, created_at, updated_at, deleted_at, account_id, task_experiment_id, statu
+  </sql>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from account_and_task_experiments
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectByAccountAndTaskExperiment" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List" /> from account_and_task_experiments
+    where account_id = #{accountId,jdbcType=VARCHAR} and task_experiment_id = #{taskExperimentId}
+  </select>
+
+  <select id="selectByTaskAndAccountId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from account_and_task_experiments
+    where deleted_at is null and account_id = #{accountId}
+    and task_experiment_id = #{taskExperimentId}
+  </select>
+
+  <select id="selectByTaskId" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from account_and_task_experiments
+    where deleted_at is null
+    and task_experiment_id = #{taskExperimentId}
+  </select>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from account_and_task_experiments
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+
+  <update id="updateStatu" >
+    update account_and_task_experiments set statu = #{statu} where deleted_at is null
+    and account_id=#{accountId} and task_experiment_id = #{taskExperimentId}
+  </update>
+
+  <insert id="insert" parameterType="com.tlf.creatorcourse.entity.taskexperiment.AccountAndTaskExperiments" >
+    insert into account_and_task_experiments (id, created_at, updated_at, deleted_at, account_id, task_experiment_id, statu)
+    values (#{id,jdbcType=VARCHAR}, now(), now(), null, #{accountId,jdbcType=VARCHAR}, #{taskExperimentId,jdbcType=VARCHAR},
+      #{statu,jdbcType=VARCHAR})
+  </insert>
+
+  <update id="updateByPrimaryKey" parameterType="com.tlf.creatorcourse.entity.taskexperiment.AccountAndTaskExperiments" >
+    update account_and_task_experiments
+    set created_at = #{createdAt,jdbcType=TIMESTAMP},
+      updated_at = #{updatedAt,jdbcType=TIMESTAMP},
+      deleted_at = #{deletedAt,jdbcType=TIMESTAMP},
+      account_id = #{accountId,jdbcType=VARCHAR},
+      task_experiment_id = #{taskExperimentId,jdbcType=VARCHAR},
+      status = #{status,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <update id="updateStatuStop" >
+    update account_and_task_experiments set statu = 'expired' where task_experiment_id = #{taskExperimentId} and  (statu = 'new' or statu = 'save')
+  </update>
+</mapper>
