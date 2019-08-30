@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tlf.creator.dao.user.course.CourseTeacherClassMapper" >
+
+  <resultMap id="BaseResultMap" type="com.tlf.creator.entity.user.course.CourseTeacherClass" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    <result column="deleted_at" property="deletedAt" jdbcType="TIMESTAMP" />
+    <result column="course_id" property="courseId" jdbcType="VARCHAR" />
+    <result column="teacher_id" property="teacherId" jdbcType="VARCHAR" />
+    <result column="class_id" property="classId" jdbcType="LONGVARCHAR" />
+    <result column="semester" property="semester" jdbcType="LONGVARCHAR" />
+  </resultMap>
+
+  <resultMap id="CourseTeacherResultMap" type="com.tlf.creator.po.CourseTeacherPO">
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="course" property="course" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="course_id" property="courseId" jdbcType="VARCHAR" />
+    <result column="teacher_id" property="teacherId" jdbcType="VARCHAR" />
+    <result column="class_id" property="classId" jdbcType="LONGVARCHAR" />
+    <result column="semester" property="semester" jdbcType="LONGVARCHAR" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    id, created_at, updated_at, deleted_at, course_id, teacher_id, class_id,semester
+  </sql>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from course_teacher_class
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectByCourseAndTeacher" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from course_teacher_class
+    where deleted_at is null and course_id = #{courseId} and teacher_id = #{teacherId}
+  </select>
+
+  <select id="selectCourseTeacher" resultType="java.lang.String">
+    select id from course_teacher_class where deleted_at is null and course_id = #{courseId} and teacher_id = #{teacherId}
+  </select>
+
+
+  <select id="selectCourseTeacherAndClass" resultMap="CourseTeacherResultMap">
+    SELECT
+      course_teacher_class.id,
+      courses.course,
+      accounts.name,
+      course_teacher_class.class_id,
+      course_teacher_class.course_id,
+      course_teacher_class.teacher_id,
+      course_teacher_class.semester
+      FROM
+      courses ,
+      accounts ,
+      accounts_and_roles ,
+      course_teacher_class ,
+      roles
+      WHERE
+      courses.deleted_at is null and accounts.deleted_at is null and accounts_and_roles.deleted_at is null
+      and course_teacher_class.deleted_at is null and roles.deleted_at is null and
+      courses.id = course_teacher_class.course_id AND
+      course_teacher_class.teacher_id = accounts.id AND
+      accounts_and_roles.accounts_id = accounts.id AND
+      roles.id = accounts_and_roles.roles_id AND
+      roles.`name` = 'teacher' order by course_teacher_class.updated_at desc limit #{offset},#{limit}
+  </select>
+
+  <select id="selectCourseByTeacher" resultMap="BaseResultMap">
+    select id,course_id,teacher_id,class_id,semester from course_teacher_class where deleted_at is null and teacher_id = #{teacherId};
+  </select>
+
+  <select id="selectByCourseId" resultMap="BaseResultMap">
+    select id,course_id,teacher_id,class_id,semester from course_teacher_class where deleted_at is null and course_id = #{courseId};
+  </select>
+
+  <select id="selectByCourseIdExcludeSelf" resultMap="BaseResultMap">
+    select id,course_id,teacher_id,class_id,semester from course_teacher_class where deleted_at is null and course_id = #{courseId} and id &lt;&gt; #{id};
+  </select>
+
+  <select id="selectAll" resultMap="BaseResultMap">
+    select id,course_id,teacher_id,class_id,semester from course_teacher_class where deleted_at is null;
+  </select>
+
+  <select id="selectCount" resultType="java.lang.Integer">
+    SELECT count(*)
+    FROM
+    accounts ,
+    course_teacher_class ,
+    courses
+    WHERE
+    accounts.deleted_at is null and course_teacher_class.deleted_at is null and
+    accounts.id = course_teacher_class.teacher_id AND
+    courses.id = course_teacher_class.course_id
+  </select>
+
+  <update id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    update course_teacher_class set deleted_at = now()
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <insert id="insert" parameterType="com.tlf.creator.entity.user.course.CourseTeacherClass" >
+    insert into course_teacher_class (id, created_at, updated_at, deleted_at, course_id, teacher_id, class_id,semester)
+    values (#{id,jdbcType=VARCHAR}, now(),  now(), null, #{courseId,jdbcType=VARCHAR}, #{teacherId,jdbcType=VARCHAR}, #{classId,jdbcType=LONGVARCHAR},#{semester,jdbcType=LONGVARCHAR})
+  </insert>
+
+  <update id="updateByPrimaryKey" parameterType="com.tlf.creator.entity.user.course.CourseTeacherClass" >
+    update course_teacher_class
+    set course_id = #{courseId,jdbcType=VARCHAR},
+      teacher_id = #{teacherId,jdbcType=VARCHAR},
+      class_id = #{classId,jdbcType=LONGVARCHAR},
+      semester = #{semester,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+</mapper>

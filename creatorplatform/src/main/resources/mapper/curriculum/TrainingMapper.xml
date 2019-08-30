@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tlf.creator.dao.curriculum.training.TrainingMapper" >
+  
+  <resultMap id="BaseResultMap" type="com.tlf.creator.entity.curriculum.training.Training" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    <result column="deleted_at" property="deletedAt" jdbcType="TIMESTAMP" />
+    <result column="module_id" property="moduleId" jdbcType="VARCHAR" />
+    <result column="type_id" property="typeId" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="innerr" property="innerr" jdbcType="BIT" />
+    <result column="creator_id" property="creatorId" jdbcType="VARCHAR" />
+    <result column="teach_description" property="teachDescription" jdbcType="LONGVARCHAR" />
+    <result column="practice_description" property="practiceDescription" jdbcType="LONGVARCHAR" />
+    <result column="exam_description" property="examDescription" jdbcType="LONGVARCHAR" />
+  </resultMap>
+  
+  <sql id="Base_Column_List" >
+    id, created_at, updated_at, deleted_at, module_id, type_id, name, innerr, creator_id, teach_description, practice_description, exam_description
+  </sql>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from training
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectTrainingInner" resultMap="BaseResultMap" parameterType="com.tlf.creator.req.TrainingReq">
+    select
+    id,name,updated_at
+    from training where deleted_at is null
+    and innerr = 1
+    <if test="trainingModuleId!=null">
+      and module_id = #{trainingModuleId}
+    </if>
+    <if test="trainingTypeId!=null">
+      and type_id = #{trainingTypeId}
+    </if>
+    <if test="trainingSearch!=null">
+      and name like concat('%',#{trainingSearch},'%')
+    </if>
+     order by updated_at desc limit #{offset},#{limit}
+  </select>
+
+  <select id="selectCountInner" resultType="java.lang.Integer" parameterType="com.tlf.creator.req.TrainingReq">
+    select count(*) from training where
+    deleted_at is null
+    and innerr = 1
+    <if test="trainingModuleId!=null">
+      and module_id = #{trainingModuleId}
+    </if>
+    <if test="trainingTypeId!=null">
+      and type_id = #{trainingTypeId}
+    </if>
+    <if test="trainingSearch!=null">
+      and name like concat('%',#{trainingSearch},'%')
+    </if>
+  </select>
+
+  <select id="selectTrainingByTeacher" resultMap="BaseResultMap" parameterType="com.tlf.creator.req.TrainingReq">
+    select
+    id,name
+    from training where deleted_at is null
+    and innerr = 0
+    and creator_id = #{creatorId}
+    <if test="trainingModuleId!=null">
+      and module_id = #{trainingModuleId}
+    </if>
+    <if test="trainingTypeId!=null">
+      and type_id = #{trainingTypeId}
+    </if>
+    <if test="trainingSearch!=null">
+      and name like concat('%',#{trainingSearch},'%')
+    </if>
+    order by updated_at desc limit #{offset},#{limit}
+  </select>
+
+  <select id="selectCountSelf" resultType="java.lang.Integer" parameterType="com.tlf.creator.req.TrainingReq">
+    select count(*) from training where deleted_at is null
+     and innerr = 0
+     and creator_id = #{creatorId}
+    <if test="trainingModuleId!=null">
+      and module_id = #{trainingModuleId}
+    </if>
+    <if test="trainingTypeId!=null">
+      and type_id = #{trainingTypeId}
+    </if>
+    <if test="trainingSearch!=null">
+      and name like concat('%',#{trainingSearch},'%')
+    </if>
+  </select>
+  
+  <select id="selectByModule" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from training
+    where deleted_at is null and module_id = #{moduleId,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectByModuleAndCreator" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from training
+    where deleted_at is null and module_id = #{moduleId,jdbcType=VARCHAR} and creator_id = #{creatorId}
+  </select>
+
+  <update id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    update training set deleted_at = now()
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <insert id="insert" parameterType="com.tlf.creator.entity.curriculum.training.Training" >
+    insert into training (id, created_at, updated_at, 
+      deleted_at, module_id, type_id, 
+      name, innerr, creator_id, 
+      teach_description, practice_description, 
+      exam_description)
+    values (#{id,jdbcType=VARCHAR}, now(), now(), null, #{moduleId,jdbcType=VARCHAR}, #{typeId,jdbcType=VARCHAR},
+      #{name,jdbcType=VARCHAR}, #{innerr,jdbcType=BIT}, #{creatorId,jdbcType=VARCHAR}, 
+      #{teachDescription,jdbcType=LONGVARCHAR}, #{practiceDescription,jdbcType=LONGVARCHAR}, 
+      #{examDescription,jdbcType=LONGVARCHAR})
+  </insert>
+
+  <update id="updateByPrimaryKey" parameterType="com.tlf.creator.entity.curriculum.training.Training" >
+    update training
+    set
+    <if test="name!=null">
+      name = #{name,jdbcType=VARCHAR}
+    </if>
+    <if test="teachDescription!=null">
+      ,teach_description = #{teachDescription,jdbcType=LONGVARCHAR}
+    </if>
+    <if test="practiceDescription!=null">
+      ,practice_description = #{practiceDescription,jdbcType=LONGVARCHAR}
+    </if>
+    <if test="examDescription!=null">
+      ,exam_description = #{examDescription,jdbcType=LONGVARCHAR}
+    </if>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+</mapper>
