@@ -17,6 +17,10 @@ public interface TrainingMapper {
 
     int selectCountInner(TrainingReq req);
 
+    int updateTime(String id);
+
+    int updateTrainingModule(String moduleId,String id);
+
     List<Training> selectTrainingByTeacher(TrainingReq req);
 
     List<Training> selectByModule(String moduleId);

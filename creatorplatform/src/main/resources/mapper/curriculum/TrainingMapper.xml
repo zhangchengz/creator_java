@@ -62,7 +62,7 @@
 
   <select id="selectTrainingByTeacher" resultMap="BaseResultMap" parameterType="com.tlf.creator.req.TrainingReq">
     select
-    id,name
+    id,name,updated_at
     from training where deleted_at is null
     and innerr = 0
     and creator_id = #{creatorId}
@@ -110,6 +110,14 @@
   <update id="deleteByPrimaryKey" parameterType="java.lang.String" >
     update training set deleted_at = now()
     where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <update id="updateTime">
+    update training set updated_at = now() where id = #{id}
+  </update>
+
+  <update id="updateTrainingModule">
+    update training set module_id = #{moduleId},innerr = 1 where id = #{id}
   </update>
 
   <insert id="insert" parameterType="com.tlf.creator.entity.curriculum.training.Training" >

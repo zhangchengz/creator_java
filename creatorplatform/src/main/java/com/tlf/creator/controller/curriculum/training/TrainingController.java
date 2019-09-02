@@ -145,7 +145,7 @@ public class TrainingController {
             return new JsonResult(Constants.CODE_FAIL, "id,模式不能为空", null, null);
         }
         String courseId = request.getHeader("Cube-Domain");
-        boolean update = trainingService.updateByPrimaryKey(courseId, req);
+        trainingService.updateByPrimaryKey(courseId, req);
         return new JsonResult(Constants.CODE_SUCCESS, "SUCCESS", null, null);
     }
 
@@ -175,4 +175,64 @@ public class TrainingController {
         return new JsonResult(Constants.CODE_SUCCESS, "SUCCESS", null, trainingTypes);
     }
 
+    /**
+     * 添加实训模块
+     * @param req
+     * @param request
+     * @return
+     */
+    @PostMapping(value = "add_training_module")
+    @AuthToken(role_name = "teacher")
+    public JsonResult addTrainingModule(@RequestBody TrainingReq req,HttpServletRequest request){
+        if(StringUtils.isBlank(req.getTrainingModuleName())){
+            return new JsonResult(Constants.CODE_FAIL,"名称不能为空",null,null);
+        }
+        String courseId = request.getHeader("Cube-Domain");
+        TrainingModule trainingModule = new TrainingModule();
+        String id = UUID.randomUUID().toString();
+        trainingModule.setId(id);
+        trainingModule.setName(req.getTrainingModuleName());
+        boolean insert = moduleService.insert(courseId, trainingModule);
+        if(insert){
+            return new JsonResult(Constants.CODE_SUCCESS,"SUCCESS",null,id);
+        }else{
+            return new JsonResult(Constants.CODE_FAIL,"FAIL",null,null);
+        }
+    }
+
+    /**
+     * 删除实训模块
+     * @param req
+     * @param request
+     * @return
+     */
+    @PostMapping(value = "delete_training_module")
+    @AuthToken(role_name = "teacher")
+    public JsonResult deleteTrainingModule(@RequestBody TrainingReq req,HttpServletRequest request){
+        if(StringUtils.isBlank(req.getTrainingModuleId())){
+            return new JsonResult(Constants.CODE_FAIL,"id不能为空",null,null);
+        }
+        String courseId = request.getHeader("Cube-Domain");
+        boolean delete = moduleService.deleteByPrimaryKey(courseId, req.getTrainingModuleId());
+        if(delete){
+            return new JsonResult(Constants.CODE_SUCCESS,"SUCCESS",null,null);
+        }else{
+            return new JsonResult(Constants.CODE_FAIL,"FAIL",null,null);
+        }
+    }
+
+    @PostMapping(value = "835fae1e-1797-4e03-86be-5b0a5fdb1001")
+    @AuthToken(role_name = "teacher")
+    public JsonResult modifyTrainingModule(@RequestBody TrainingReq req,HttpServletRequest request){
+        if(StringUtils.isBlank(req.getTrainingModuleId())||StringUtils.isBlank(req.getTrainingId())){
+            return new JsonResult(Constants.CODE_FAIL,"id不能为空",null,null);
+        }
+        String courseId = request.getHeader("Cube-Domain");
+        boolean b = trainingService.updateTrainingModule(courseId, req.getTrainingModuleId(), req.getTrainingId());
+        if(b){
+            return new JsonResult(Constants.CODE_SUCCESS,"SUCCESS",null,null);
+        }else{
+            return new JsonResult(Constants.CODE_FAIL,"FAIL",null,null);
+        }
+    }
 }

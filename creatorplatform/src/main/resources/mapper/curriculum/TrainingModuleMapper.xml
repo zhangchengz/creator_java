@@ -26,14 +26,14 @@
     select
     <include refid="Base_Column_List" />
     from training_module
-    where deleted_at is null and visible = 1
+    where deleted_at is null and visible = 1 order by created_at
   </select>
 
   <select id="selectAllNotVisible" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
     from training_module
-    where deleted_at is null and visible = 0
+    where deleted_at is null and visible = 0 order by created_at
   </select>
 
   <update id="deleteByPrimaryKey" parameterType="java.lang.String">
@@ -42,12 +42,12 @@
   </update>
 
   <insert id="insert" parameterType="com.tlf.creator.entity.curriculum.training.TrainingModule">
-    insert into training_module (id, created_at, updated_at,
-      deleted_at, name, visible
-      )
-    values (#{id,jdbcType=VARCHAR}, now(), now(),
-     null, #{name,jdbcType=VARCHAR}, #{visible,jdbcType=BIT}
-      )
+    insert into training_module
+    (id, created_at, updated_at,
+      deleted_at, name, visible)
+    values
+     (#{id,jdbcType=VARCHAR}, now(), now(),
+     null, #{name,jdbcType=VARCHAR}, 1)
   </insert>
 
   <update id="updateByPrimaryKey" parameterType="com.tlf.creator.entity.curriculum.training.TrainingModule">

@@ -32,4 +32,6 @@ public interface TrainingService {
 
     List<TrainingType> selectTrainingType(String courseId);
 
+    boolean updateTrainingModule(String courseId,String moduleId,String id);
+
 }

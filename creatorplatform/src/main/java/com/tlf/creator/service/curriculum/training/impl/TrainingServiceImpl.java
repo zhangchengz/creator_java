@@ -258,7 +258,7 @@ public class TrainingServiceImpl implements TrainingService {
                 List<String> annex = req.getAnnex();
                 List<String> annex1 = new ArrayList<>();
                 annex1.addAll(annex);
-                System.out.println(annex1==annex);
+                System.out.println(annex1 == annex);
                 //保留前端附件比数据库原有多的部分并修改为对应的附件
                 annex.removeAll(annexList);
                 for (String id : annex) {
@@ -346,7 +346,6 @@ public class TrainingServiceImpl implements TrainingService {
                 }
             }
             //实训练习部分
-
             List<TrainingSimPO> trainingSimPOS = trainingSimMapper.selectByTrainingId(req.getTrainingId());
             List<String> practiceSimList = new ArrayList<>();
             List<String> practiceList = new ArrayList<>();
@@ -401,10 +400,8 @@ public class TrainingServiceImpl implements TrainingService {
                     trainingSimMapper.deleteByTrainingAndSim(req.getTrainingId(), id);
                 }
             }
-
         } else if (req.getMode().equals(ModeEnum.EXAM)) { //考核模式
             training.setExamDescription(descrip);
-
             List<String> reportList = new ArrayList<>();
             for (TrainingFile trainingFile : trainingFiles) {
                 if (trainingFile != null || StringUtils.isNotBlank(trainingFile.getId())) {
@@ -461,8 +458,6 @@ public class TrainingServiceImpl implements TrainingService {
                     }
                 }
             }
-
-
             List<TrainingSimPO> trainingSimPOS = trainingSimMapper.selectByTrainingId(req.getTrainingId());
             List<String> examSimList = new ArrayList<>();
             List<String> examList = new ArrayList<>();
@@ -495,7 +490,7 @@ public class TrainingServiceImpl implements TrainingService {
                             String suffix = FileUtil.extName(file);
                             String sub = path.substring(0, path.lastIndexOf(".") - 36);
                             File file1 = new File(uploadPathBean.getUploadPath() + sub + simulationResourceId + "." + suffix);
-                            File copy = FileUtil.copy(file, file1, false);
+                            FileUtil.copy(file, file1, false);
                             simulationResource.setId(simulationResourceId);
                             simulationResource.setInner(false);
                             simulationResource.setName(simulationResource.getName());
@@ -519,7 +514,8 @@ public class TrainingServiceImpl implements TrainingService {
             }
         }
         trainingMapper.updateByPrimaryKey(training);
-        return false;
+        trainingMapper.updateTime(req.getTrainingId());
+        return true;
     }
 
     @Override
@@ -552,6 +548,16 @@ public class TrainingServiceImpl implements TrainingService {
     public List<TrainingType> selectTrainingType(String courseId) {
         List<TrainingType> trainingTypes = typeMapper.selectAllTypes();
         return trainingTypes;
+    }
+
+    @Override
+    @DS
+    public boolean updateTrainingModule(String courseId, String moduleId, String id) {
+        int i = trainingMapper.updateTrainingModule(moduleId, id);
+        if(i>0){
+            return true;
+        }
+        return false;
     }
 
 }

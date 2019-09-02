@@ -22,6 +22,16 @@ public class TrainingReq extends PageReq{
     private List<String> practiceSim;
     private List<String> report;
     private List<String> examSim;
+    private String trainingModuleName;
+
+
+    public String getTrainingModuleName() {
+        return trainingModuleName;
+    }
+
+    public void setTrainingModuleName(String trainingModuleName) {
+        this.trainingModuleName = trainingModuleName;
+    }
 
     public void setDescription(List<Description> description) {
         this.description = description;
