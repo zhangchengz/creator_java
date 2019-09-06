@@ -1,6 +1,6 @@
 package com.tlf.creator.service.curriculum.training.impl;
 
-import com.tlf.creator.config.DS;
+import com.tlf.creator.aspect.DS;
 import com.tlf.creator.dao.curriculum.training.TrainingModuleMapper;
 import com.tlf.creator.entity.curriculum.training.TrainingModule;
 import com.tlf.creator.service.curriculum.training.TrainingModuleService;

@@ -17,66 +17,44 @@ import javax.sql.DataSource;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 配置数据源类
+ *
+ * @author zhangc
+ * @date 2019/9/6
+ */
 @Configuration
 @MapperScan(basePackages = {"com.tlf.creator.dao.curriculum"}, sqlSessionFactoryRef = "sqlSessionFactory")
 public class DataSourceConfigurer {
 
     private final String MAPPER_LOCATION = "classpath:mapper/curriculum/*.xml";
 
-
-    // ------------------------------ 数据源配置 ------------------------------
-    @Bean("creatorcourse")
-    @ConfigurationProperties(prefix = "spring.datasource.creatorcourse")
-    public DataSource dataSource() {
+    /**
+     * 数据源配置
+     * @return
+     */
+    @Bean("course_dj")
+    @ConfigurationProperties(prefix = "spring.datasource.course-dj")
+    public DataSource dataSourceDJ() {
         return DruidDataSourceBuilder.create().build();
     }
 
-    @Bean("creatorcourse1")
-    @ConfigurationProperties(prefix = "spring.datasource.creatorcourse1")
-    public DataSource dataSource1() {
+    @Bean("course_cp")
+    @ConfigurationProperties(prefix = "spring.datasource.course-cp")
+    public DataSource dataSourceCP() {
         return DruidDataSourceBuilder.create().build();
     }
-
-    /*@Bean("creatorcourse2")
-    @ConfigurationProperties(prefix = "spring.datasource.creatorcourse2")
-    public DataSource dataSource2() {
-        return DruidDataSourceBuilder.create().build();
-    }
-
-    @Bean("creatorcourse3")
-    @ConfigurationProperties(prefix = "spring.datasource.creatorcourse3")
-    public DataSource dataSource3() {
-        return DruidDataSourceBuilder.create().build();
-    }
-
-    @Bean("creatorcourse4")
-    @ConfigurationProperties(prefix = "spring.datasource.creatorcourse4")
-    public DataSource dataSource4() {
-        return DruidDataSourceBuilder.create().build();
-    }
-
-    @Bean("creatorcourse5")
-    @ConfigurationProperties(prefix = "spring.datasource.creatorcourse5")
-    public DataSource dataSource5() {
-        return DruidDataSourceBuilder.create().build();
-    }*/
 
     @Bean("dynamicDataSource")
     public DataSource dynamicDataSource() {
         DynamicDataSource dynamicRoutingDataSource = new DynamicDataSource();
         Map<Object, Object> dataSourceMap = new HashMap<>();
-        dataSourceMap.put("creatorcourse", dataSource());
-        dataSourceMap.put("creatorcourse1", dataSource1());
-        //dataSourceMap.put("creatorcourse2", dataSource2());
-        //dataSourceMap.put("creatorcourse3", dataSource3());
-        //dataSourceMap.put("creatorcourse4", dataSource4());
-        //dataSourceMap.put("creatorcourse5", dataSource5());
-
+        dataSourceMap.put("course_dj", dataSourceDJ());
+        dataSourceMap.put("course_cp", dataSourceCP());
         // 将 driverOrderRecordMaster 数据源作为默认指定的数据源
-        dynamicRoutingDataSource.setDefaultTargetDataSource(dataSource());
+        dynamicRoutingDataSource.setDefaultTargetDataSource(dataSourceDJ());
         // 指定使用到的所有数据源
         dynamicRoutingDataSource.setTargetDataSources(dataSourceMap);
-
         // 将数据源的 key 放到数据源上下文的 key 集合中，用于切换时判断数据源是否有效
         DataSourceContextHolder.dataSourceKeys.addAll(dataSourceMap.keySet());
 
@@ -97,8 +75,10 @@ public class DataSourceConfigurer {
         return new SqlSessionTemplate(sqlSessionFactory);
     }
 
-    // 注入 DataSourceTransactionManager 事务
-    @Bean
+    /**
+     * 注入 DataSourceTransactionManager 事务
+     */
+    @Bean("transactionManager")
     public PlatformTransactionManager transactionManager(@Qualifier("dynamicDataSource") DataSource dynamicDataSource) {
         return new DataSourceTransactionManager(dynamicDataSource);
     }

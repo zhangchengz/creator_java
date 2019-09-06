@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tlf.creator.dao.user.product.VersionMapper" >
+  
+  <resultMap id="BaseResultMap" type="com.tlf.creator.entity.user.product.Version" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    <result column="deleted_at" property="deletedAt" jdbcType="TIMESTAMP" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="item_id" property="itemId" jdbcType="VARCHAR" />
+    <result column="bulletin" property="bulletin" jdbcType="LONGVARCHAR" />
+  </resultMap>
+
+  <resultMap id="NameResultMap" type="com.tlf.creator.po.VersionPO" >
+    <result column="item_name" property="itemName" jdbcType="VARCHAR" />
+    <result column="version_name" property="versionName" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    id, created_at, updated_at, deleted_at, name, item_id, bulletin
+  </sql>
+
+  <select id="selectNameById" resultMap="NameResultMap">
+    SELECT
+    version.`name` AS version_name,
+    item.`name` AS item_name
+    FROM
+    item ,
+    version
+    WHERE
+    item.id = version.item_id and
+    version.id = #{id}
+  </select>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from version
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectByItem" resultMap="BaseResultMap" parameterType="java.lang.String">
+    select
+    <include refid="Base_Column_List" />
+    from version
+    where deleted_at is null
+    and item_id = #{itemId}
+    order by created_at
+  </select>
+  
+  <update id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    update  version set deleted_at = now()
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  
+  <insert id="insert" parameterType="com.tlf.creator.entity.user.product.Version" >
+    insert into version (id, created_at, updated_at, 
+      deleted_at, name, item_id, 
+      bulletin)
+    values (#{id,jdbcType=VARCHAR}, now(), now(),
+      null, #{name,jdbcType=VARCHAR}, #{itemId,jdbcType=VARCHAR},
+      #{bulletin,jdbcType=LONGVARCHAR})
+  </insert>
+
+
+  <update id="updateByPrimaryKey" parameterType="com.tlf.creator.entity.user.product.Version" >
+    update version
+    set bulletin = #{bulletin,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

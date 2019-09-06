@@ -1,12 +1,13 @@
 package com.tlf.creator.controller.curriculum.simulation;
 
+import cn.hutool.core.io.FileUtil;
+import com.tlf.creator.aspect.AuthToken;
 import com.tlf.creator.common.Constants;
 import com.tlf.creator.common.JsonResult;
 import com.tlf.creator.config.UploadPathBean;
 import com.tlf.creator.entity.curriculum.simulation.ExperimentTypes;
 import com.tlf.creator.entity.curriculum.simulation.SceneType;
 import com.tlf.creator.entity.curriculum.simulation.SimulationResource;
-import com.tlf.creator.permission.AuthToken;
 import com.tlf.creator.po.SimulationResourcePO;
 import com.tlf.creator.req.ResourceReq;
 import com.tlf.creator.req.SimReq;
@@ -14,17 +15,13 @@ import com.tlf.creator.req.SimulationResourceReq;
 import com.tlf.creator.service.curriculum.simulationresource.ISceneTypeService;
 import com.tlf.creator.service.curriculum.simulationresource.ISimulationResourceService;
 import com.tlf.creator.utils.AccountUtil;
-import org.apache.commons.io.FileUtils;
+import com.tlf.creator.utils.DBUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -33,6 +30,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping
+@CrossOrigin
 public class SimulationResourceController {
 
     @Autowired
@@ -47,13 +45,15 @@ public class SimulationResourceController {
     @Autowired
     private AccountUtil accountUtil;
 
+    @Autowired
+    private DBUtil dbUtil;
+
     /**
      * 获取资源类型列表
      *
      * @param request
      * @return
      */
-
     @RequestMapping(value = "get_scene_type_list", method = RequestMethod.POST)
     public JsonResult getSceneTypeList(HttpServletRequest request) {
         String courseId = request.getHeader("Cube-Domain");
@@ -67,7 +67,6 @@ public class SimulationResourceController {
      * @param req
      * @return
      */
-
     @RequestMapping(value = "get_simulation_resource_list", method = RequestMethod.POST)
     public JsonResult getSimulationResourceList(@RequestBody SimReq req,HttpServletRequest request) {
         String courseId = request.getHeader("Cube-Domain");
@@ -91,7 +90,6 @@ public class SimulationResourceController {
      * @return
      * @throws IOException
      */
-
     @RequestMapping(value = "add_simulation_resource", method = RequestMethod.POST)
     @AuthToken(role_name = "teacher")
     public JsonResult addSimulationResource(@RequestBody SimulationResourceReq resourceReq,HttpServletRequest request) throws IOException {
@@ -103,18 +101,19 @@ public class SimulationResourceController {
                 return new JsonResult(Constants.CODE_FAIL, "该名称已经存在", null, null);
             }
         }
-        File file = new File(uploadPathBean.getUploadPath() + "/" + "simulation_resource");
+        String courseAlias = dbUtil.getCourseAlias(courseId);
+        File file = new File(uploadPathBean.getUploadPath() + courseAlias+File.separator + "simulation_resource");
         if (!file.exists()) {
             file.mkdirs();
         }
         String uuid = UUID.randomUUID().toString();
         String simName = uuid + ".cc3d";
-        Path simPath = Paths.get(file.getAbsolutePath() + "/" + simName);
+        Path simPath = Paths.get(file.getAbsolutePath() + File.separator + simName);
         simPath.toFile().createNewFile();
         SimulationResource simulationResource = new SimulationResource();
         simulationResource.setId(uuid);
         simulationResource.setInner(false);
-        simulationResource.setPath("simulation_resource/" + simName);
+        simulationResource.setPath( courseAlias+File.separator + "simulation_resource");
         simulationResource.setName(resourceReq.getName());
         simulationResource.setTypeId(resourceReq.getTypeId());
         simulationResource.setCreatorId(accountId);
@@ -133,7 +132,6 @@ public class SimulationResourceController {
      * @return
      * @throws IOException
      */
-
     @RequestMapping(value = "clone_simulation_resource", method = RequestMethod.POST)
     @AuthToken(role_name = "teacher")
     public JsonResult cloneSimulationResource(@RequestBody SimulationResourceReq resourceReq,HttpServletRequest request) {
@@ -149,24 +147,19 @@ public class SimulationResourceController {
                 return new JsonResult(Constants.CODE_FAIL, "该名称已经存在", null, null);
             }
         }
-        String url3 = simulationResource1.getPath();
-        String url = Constants.RESOURCE_PATH + url3;
-        File dir = new File(uploadPathBean.getUploadPath() + "/simulation_resource");
-        String uuid = UUID.randomUUID().toString();
-        String suffix = url3.substring(url3.lastIndexOf("."));
-        String simName = uuid + suffix;
-        try {
-            URL httpUrl = new URL(url);
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
-            FileUtils.copyURLToFile(httpUrl, new File(dir + "/" + simName));
-        } catch (Exception e) {
-            e.printStackTrace();
+        String path = simulationResource1.getPath();
+        File file = new File(uploadPathBean.getUploadPath() + path);
+        if (!file.exists()) {
+            return new JsonResult(Constants.CODE_FAIL,"场景不存在",null,null);
         }
-        simulationResource1.setId(uuid);
+        String simulationResourceId = UUID.randomUUID().toString();
+        String suffix = FileUtil.extName(file);
+        String sub = path.substring(0, path.lastIndexOf(".") - 36);
+        File file1 = new File(uploadPathBean.getUploadPath() + sub + simulationResourceId + "." + suffix);
+        FileUtil.copy(file, file1, false);
+        simulationResource1.setId(simulationResourceId);
         simulationResource1.setInner(false);
-        simulationResource1.setPath("simulation_resource/" + simName);
+        simulationResource1.setPath(sub + simulationResourceId + "." + suffix);
         simulationResource1.setName(resourceReq.getName());
         simulationResource1.setCreatorId(accountId);
         boolean insert = simulationResourceService.insert(courseId,simulationResource1);
@@ -183,7 +176,6 @@ public class SimulationResourceController {
      * @param resourceReq
      * @return
      */
-
     @RequestMapping(value = "delete_simulation_resource", method = RequestMethod.POST)
     @AuthToken(role_name = "teacher")
     public JsonResult deleteSimulationResource(@RequestBody SimulationResourceReq resourceReq,HttpServletRequest request) {
@@ -201,7 +193,6 @@ public class SimulationResourceController {
      * @param resourceReq
      * @return
      */
-
     @RequestMapping(value = "modify_simulation_resource", method = RequestMethod.POST)
     @AuthToken(role_name = "teacher")
     public JsonResult modifySimulationResource(@RequestBody ResourceReq resourceReq,HttpServletRequest request) {
@@ -231,7 +222,6 @@ public class SimulationResourceController {
      * @param request
      * @return
      */
-
     @RequestMapping(value = "experiment_type_list", method = RequestMethod.POST)
     public JsonResult getExperimentTypes(HttpServletRequest request) {
         String courseId = request.getHeader("Cube-Domain");
@@ -245,11 +235,11 @@ public class SimulationResourceController {
      * @param req
      * @return
      */
-
     @RequestMapping(value = "get_scene_types", method = RequestMethod.POST)
     public JsonResult getSceneTypeList(@RequestBody SimReq req,HttpServletRequest request) {
         String courseId = request.getHeader("Cube-Domain");
         List<SceneType> sceneTypes = sceneTypeService.selectListByAlias(courseId,req.getAlias());
         return new JsonResult(Constants.CODE_SUCCESS, "SUCCESS", null, sceneTypes);
     }
+
 }

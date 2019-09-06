@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tlf.creator.dao.user.account.AccountAndRoleMapper">
+
+    <resultMap id="AccountAndRoleResultMap" type="com.tlf.creator.entity.user.account.AccountsAndRoles">
+        <id property="id" column="id" javaType="java.lang.String"/>
+        <result property="createdAt" column="created_at" javaType="java.sql.Timestamp"/>
+        <result property="updatedAt" column="updated_at" javaType="java.sql.Timestamp"/>
+        <result property="deletedAt" column="deleted_at" javaType="java.sql.Timestamp"/>
+        <result property="accountsId" column="accounts_id" javaType="java.lang.String"/>
+        <result property="rolesId" column="roles_id" javaType="java.lang.String"/>
+    </resultMap>
+
+    <!--一个账号只有一个角色-->
+    <!--根据用户id查询用户角色-->
+    <select id="queryAccountAndRoleByAccountId" resultMap="AccountAndRoleResultMap">
+        select id,created_at,updated_at,deleted_at,accounts_id,roles_id from accounts_and_roles
+        where accounts_id = #{accountsId}
+    </select>
+
+    <!--根据角色查询用户-->
+    <select id="queryAccountAndRoleByRoleId" resultMap="AccountAndRoleResultMap">
+         select id,created_at,updated_at,deleted_at,accounts_id,roles_id from accounts_and_roles
+        where roles_id = #{rolesId} and deleted_at is null limit #{offset},#{limit}
+    </select>
+
+    <insert id="insertAccountAndRole">
+        insert into accounts_and_roles(id, created_at, updated_at, deleted_at, accounts_id, roles_id) values
+        (#{id},now(),now(),null,#{accountsId},#{rolesId})
+    </insert>
+    
+    <update id="deleteAccountAndRole">
+        update accounts_and_roles set deleted_at = now() where accounts_id=#{accountsId} and roles_id = #{rolesId}
+    </update>
+
+    <select id="selectTotal" resultType="java.lang.Integer">
+        select count(*) from accounts_and_roles where deleted_at is null and roles_id = #{rolesId}
+    </select>
+
+    <update id="deleteAccount">
+        update accounts_and_roles set deleted_at = now() where accounts_id=#{accountId}
+    </update>
+</mapper>

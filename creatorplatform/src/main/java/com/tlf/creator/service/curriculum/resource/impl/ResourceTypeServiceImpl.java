@@ -1,6 +1,6 @@
 package com.tlf.creator.service.curriculum.resource.impl;
 
-import com.tlf.creator.config.DS;
+import com.tlf.creator.aspect.DS;
 import com.tlf.creator.dao.curriculum.resource.ResourceTypeMapper;
 import com.tlf.creator.entity.curriculum.resource.ResourceTypes;
 import com.tlf.creator.service.curriculum.resource.IResourceTypeService;

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tlf.creator.dao.curriculum.task.AccountTaskMapper" >
+
+  <resultMap id="BaseResultMap" type="com.tlf.creator.entity.curriculum.task.AccountTask" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    <result column="deleted_at" property="deletedAt" jdbcType="TIMESTAMP" />
+    <result column="account_id" property="accountId" jdbcType="VARCHAR" />
+    <result column="task_id" property="taskId" jdbcType="VARCHAR" />
+    <result column="statu" property="statu" jdbcType="VARCHAR" />
+    <result column="finish_time" property="finishTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+
+  <resultMap id="AccountTaskResultMap" type="com.tlf.creator.vo.AccountTaskVO" >
+    <id column="account_task_id" property="accountTaskId" jdbcType="VARCHAR" />
+    <result column="statu" property="statu" jdbcType="VARCHAR" />
+    <result column="finish_time" property="finishTime" jdbcType="TIMESTAMP" />
+    <result column="start_time" property="startTime" jdbcType="TIMESTAMP" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="task_id" property="taskId" jdbcType="VARCHAR" />
+    <result column="training_id" property="trainingId" jdbcType="VARCHAR" />
+    <result column="master_id" property="masterId" jdbcType="VARCHAR" />
+    <result column="teaching" property="teaching" jdbcType="BIT" />
+    <result column="practice" property="practice" jdbcType="BIT" />
+    <result column="exam" property="exam" jdbcType="BIT" />
+    <result column="completed" property="completed" jdbcType="BIT" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    id, created_at, updated_at, deleted_at, account_id, task_id, statu, finish_time
+  </sql>
+
+<select id="selectByAccount" resultMap="AccountTaskResultMap" parameterType="java.lang.String">
+  select
+    account_task.id as account_task_id,
+    account_task.statu,
+    account_task.finish_time,
+    task.start_time,
+    training.`name`,
+    task.id as task_id,
+    task.training_id,
+    task.master_id,
+    task.teaching,
+    task.practice,
+    task.exam,
+    task.completed
+    from
+    task ,
+    account_task ,
+    training
+    where
+    task.id = account_task.task_id and
+    task.deleted_at is null and
+    account_task.deleted_at is null and
+    training.deleted_at is null and
+    task.training_id = training.id and
+    task.innerr=1 and
+    account_task.account_id = #{accountId}
+    order by
+    account_task.finish_time desc
+</select>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from account_task
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <update id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    update account_task set deleted_at = now()
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <insert id="bulkInsert" parameterType="com.tlf.creator.entity.curriculum.task.AccountTask" >
+    insert into account_task (id, created_at, updated_at, deleted_at, account_id, task_id, statu, finish_time)
+    values
+    <foreach collection="list" item="accountTask" index="index" separator=",">
+      (
+      #{accountTask.id,jdbcType=VARCHAR},now(), now(),null,
+      #{accountTask.accountId,jdbcType=VARCHAR}, #{accountTask.taskId,jdbcType=VARCHAR},
+      #{accountTask.statu,jdbcType=VARCHAR}, #{accountTask.finishTime,jdbcType=TIMESTAMP}
+      )
+    </foreach>
+  </insert>
+
+  <update id="updateByStatusOrFinish" parameterType="com.tlf.creator.entity.curriculum.task.AccountTask" >
+    update account_task
+    <set >
+      <if test="statu!=null">
+        statu = #{statu,jdbcType=VARCHAR},
+      </if>
+      <if test="finishTime!=null">
+        finish_time = #{finishTime,jdbcType=TIMESTAMP},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+</mapper>

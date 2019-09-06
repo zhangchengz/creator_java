@@ -7,7 +7,7 @@ import com.tlf.creator.entity.curriculum.resource.ResourceTypes;
 import com.tlf.creator.entity.curriculum.resource.Resources;
 import com.tlf.creator.entity.curriculum.training.TrainingFile;
 import com.tlf.creator.exception.OperatingException;
-import com.tlf.creator.permission.AuthToken;
+import com.tlf.creator.aspect.AuthToken;
 import com.tlf.creator.po.ResourcePO;
 import com.tlf.creator.req.DownloadReq;
 import com.tlf.creator.req.ResourceReq;
@@ -162,47 +162,6 @@ public class ResourceController {
         return new JsonResult(Constants.CODE_FAIL,"出错了，请重试",null,null);
     }
 
-    /**
-     * 添加资源（生产环境）
-     *
-     * @return
-     * @throws FileNotFoundException
-     */
-//    @RequestMapping(value = "add_resource", method = RequestMethod.POST)
-//    public JsonResult testUpload(HttpServletRequest request) throws IOException, OperatingException {
-//        String courseId = request.getHeader("Cube-Domain");
-//        MultipartHttpServletRequest params = ((MultipartHttpServletRequest) request);
-//        MultipartFile file = params.getFile("file");
-//        String resourceTypeName = params.getParameter("resourceTypeName");
-//        String resourceTypeId = params.getParameter("resourceTypeId");
-//        if (file == null || file.isEmpty()) {
-//            throw new OperatingException(Constants.CODE_FAIL, "文件为空");
-//        }
-//        File path = new File(ResourceUtils.getURL("classpath:").getPath());
-//        File upload = new File(path.getAbsolutePath(), "static/" + resourceTypeName);
-//        if (!upload.exists()) {
-//            upload.mkdirs();
-//        }
-//        String filename = file.getOriginalFilename();
-//        String suffixName = filename.substring(filename.lastIndexOf("."), filename.length());
-//        String fileId = UUID.randomUUID().toString();
-//        File file1 = new File(upload + "/" + fileId + suffixName);
-//        file.transferTo(file1);
-//        Resources resource = new Resources();
-//        String id = UUID.randomUUID().toString();
-//        resource.setId(id);
-//        resource.setName(filename);
-//        resource.setPath(resourceTypeName + "/" + fileId + suffixName);
-//        resource.setResourceTypeId(resourceTypeId);
-//        resource.setCreatorId(accountUtil.getAccountId(request));
-//        resourceService.addResource(courseId,resource);
-//        Resources resources = resourceService.queryResourceById(courseId,id);
-//        JsonResult jsonResult = new JsonResult();
-//        jsonResult.setCode(Constants.CODE_SUCCESS);
-//        jsonResult.setMsg("SUCCESS");
-//        jsonResult.setObject(resources);
-//        return jsonResult;
-//    }
     @RequestMapping(value = "test_upload_file", method = RequestMethod.POST)
     @AuthToken
     public JsonResult testUpload(@RequestBody UploadReq req) throws IOException {
@@ -293,8 +252,8 @@ public class ResourceController {
         InputStream in = null;
         try {
             String url = req.getUrl();
-            if (url.contains("static/")) {
-                url = url.substring(url.indexOf("static/") + 7);
+            if (url.contains("creator"+File.separator)) {
+                url = url.substring(url.indexOf("creator"+File.separator) + 8);
             }
             in = new FileInputStream(new File(uploadPathBean.getUploadPath() + url));
             // in=new FileInputStream(inputStream);

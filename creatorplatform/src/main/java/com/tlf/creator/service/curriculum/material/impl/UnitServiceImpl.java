@@ -22,7 +22,7 @@ public class UnitServiceImpl implements IUnitService {
         return units;
     }
 
-    @Transactional
+    @Transactional(value = "transactionManager")
     @Override
     public void insertUnit(Unit unit) throws OperatingException {
         Integer level = unit.getLevel();
@@ -34,13 +34,13 @@ public class UnitServiceImpl implements IUnitService {
         unitMapper.insertUnit(unit);
     }
 
-    @Transactional
+    @Transactional(value = "transactionManager")
     @Override
     public void updateUnitNameById(String name, String id) throws OperatingException {
         unitMapper.updateUnitNameById(name, id);
     }
 
-    @Transactional
+    @Transactional(value = "transactionManager")
     @Override
     public void deleteUnitById(String id) throws OperatingException {
         Unit unit = unitMapper.selectUnitById(id);

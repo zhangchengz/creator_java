@@ -3,7 +3,7 @@ package com.tlf.creator.controller.user.clazz;
 import com.tlf.creator.common.JsonResult;
 import com.tlf.creator.common.Constants;
 import com.tlf.creator.entity.user.clazz.Classes;
-import com.tlf.creator.permission.AuthToken;
+import com.tlf.creator.aspect.AuthToken;
 import com.tlf.creator.po.ClassCoursePO;
 import com.tlf.creator.po.ClassesPO;
 import com.tlf.creator.req.ClassReq;

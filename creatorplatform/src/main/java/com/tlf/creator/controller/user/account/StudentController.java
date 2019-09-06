@@ -3,23 +3,21 @@ package com.tlf.creator.controller.user.account;
 import com.tlf.creator.common.JsonResult;
 import com.tlf.creator.common.Constants;
 import com.tlf.creator.entity.user.account.Accounts;
-import com.tlf.creator.permission.AuthToken;
+import com.tlf.creator.aspect.AuthToken;
 import com.tlf.creator.req.StudentReq;
 import com.tlf.creator.service.user.account.IAccountService;
 import com.tlf.creator.service.user.account.IRoleService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
 @RequestMapping
 @RestController
+@CrossOrigin
 public class StudentController {
 
     @Autowired

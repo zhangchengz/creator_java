@@ -1,6 +1,6 @@
 package com.tlf.creator.service.curriculum.simulationresource.impl;
 
-import com.tlf.creator.config.DS;
+import com.tlf.creator.aspect.DS;
 import com.tlf.creator.dao.curriculum.simulation.ExperimentTypeMapper;
 import com.tlf.creator.dao.curriculum.simulation.SimulationResourceMapper;
 import com.tlf.creator.entity.curriculum.simulation.ExperimentTypes;

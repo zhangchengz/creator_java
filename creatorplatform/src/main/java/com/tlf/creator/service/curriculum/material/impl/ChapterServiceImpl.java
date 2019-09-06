@@ -60,7 +60,7 @@ public class ChapterServiceImpl implements IChapterService {
         chapterMapper.updateChapterNameById(name, id);
     }
 
-    @Transactional
+    @Transactional(value = "transactionManager")
     @Override
     public void deleteChapterById(String id) {
         Chapter chapter = chapterMapper.selectChapterById(id);

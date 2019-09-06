@@ -1,6 +1,6 @@
 package com.tlf.creator.service.curriculum.component.impl;
 
-import com.tlf.creator.config.DS;
+import com.tlf.creator.aspect.DS;
 import com.tlf.creator.common.Constants;
 import com.tlf.creator.dao.curriculum.componentlibrary.ComponentGroupMapper;
 import com.tlf.creator.dao.curriculum.componentlibrary.ComponentMapper;

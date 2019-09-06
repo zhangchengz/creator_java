@@ -1,29 +1,34 @@
 package com.tlf.creator.controller.curriculum.training;
 
+import com.tlf.creator.aspect.AuthToken;
 import com.tlf.creator.common.Constants;
 import com.tlf.creator.common.JsonResult;
 import com.tlf.creator.entity.curriculum.training.Training;
 import com.tlf.creator.entity.curriculum.training.TrainingModule;
 import com.tlf.creator.entity.curriculum.training.TrainingType;
-import com.tlf.creator.permission.AuthToken;
 import com.tlf.creator.req.TrainingReq;
 import com.tlf.creator.service.curriculum.training.TrainingModuleService;
 import com.tlf.creator.service.curriculum.training.TrainingService;
+import com.tlf.creator.service.curriculum.training.TrainingTypeService;
 import com.tlf.creator.utils.AccountUtil;
 import com.tlf.creator.vo.TrainingVO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * controller 课程实训相关
+ *
+ * @author zhangc
+ * @date 2019/9/5
+ */
 @RestController
 @RequestMapping
+@CrossOrigin
 public class TrainingController {
 
     @Autowired
@@ -34,6 +39,9 @@ public class TrainingController {
 
     @Autowired
     private TrainingModuleService moduleService;
+
+    @Autowired
+    private TrainingTypeService typeService;
 
     /**
      * 新增实训
@@ -47,8 +55,8 @@ public class TrainingController {
     public JsonResult addTraining(@RequestBody TrainingReq req, HttpServletRequest request) {
         String courseId = request.getHeader("Cube-Domain");
         String accountId = accountUtil.getAccountId(request);
-        if (StringUtils.isBlank(req.getTrainingName())) {
-            return new JsonResult(Constants.CODE_FAIL, "名称不能为空", null, null);
+        if (StringUtils.isBlank(req.getTrainingName())||StringUtils.isBlank(req.getTrainingTypeId())) {
+            return new JsonResult(Constants.CODE_FAIL, "名称和实训类型不能为空不能为空", null, null);
         }
         Training training = new Training();
         String trainingId = UUID.randomUUID().toString();
@@ -221,7 +229,7 @@ public class TrainingController {
         }
     }
 
-    @PostMapping(value = "835fae1e-1797-4e03-86be-5b0a5fdb1001")
+    @PostMapping(value = "modify_training_module")
     @AuthToken(role_name = "teacher")
     public JsonResult modifyTrainingModule(@RequestBody TrainingReq req,HttpServletRequest request){
         if(StringUtils.isBlank(req.getTrainingModuleId())||StringUtils.isBlank(req.getTrainingId())){
@@ -235,4 +243,39 @@ public class TrainingController {
             return new JsonResult(Constants.CODE_FAIL,"FAIL",null,null);
         }
     }
+
+    @PostMapping(value = "add_training_type")
+    @AuthToken(role_name = "teacher")
+    public JsonResult addTrainingType(@RequestBody TrainingReq req,HttpServletRequest request){
+        if(StringUtils.isBlank(req.getTrainingTypeName())){
+            return new JsonResult(Constants.CODE_FAIL,"名称不能为空",null,null);
+        }
+        String courseId = request.getHeader("Cube-Domain");
+        TrainingType trainingType = new TrainingType();
+        String id = UUID.randomUUID().toString();
+        trainingType.setId(id);
+        trainingType.setName(req.getTrainingTypeName());
+        boolean insert = typeService.insert(courseId, trainingType);
+        if(insert){
+            return new JsonResult(Constants.CODE_SUCCESS,"SUCCESS",null,null);
+        }else{
+            return new JsonResult(Constants.CODE_FAIL,"FAIL",null,null);
+        }
+    }
+
+    @PostMapping(value = "delete_training_type")
+    @AuthToken(role_name = "teacher")
+    public JsonResult deleteTrainingType(@RequestBody TrainingReq req,HttpServletRequest request){
+        if(StringUtils.isBlank(req.getTrainingTypeId())){
+            return new JsonResult(Constants.CODE_FAIL,"id不能为空",null,null);
+        }
+        String courseId = request.getHeader("Cube-Domain");
+        boolean delete = typeService.deleteByPrimaryKey(courseId, req.getTrainingTypeId());
+        if(delete){
+            return new JsonResult(Constants.CODE_SUCCESS,"SUCCESS",null,null);
+        }else{
+            return new JsonResult(Constants.CODE_FAIL,"FAIL",null,null);
+        }
+    }
+
 }

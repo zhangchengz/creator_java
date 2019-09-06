@@ -23,20 +23,20 @@ public class MaterialServiceImpl implements IMaterialService {
     @Autowired
     private MaterialAndChapterMapper macMapper;
 
-    @Transactional
+    @Transactional(value = "transactionManager")
     @Override
     public void addMaterial(Material material, MaterialAndChapter mac) {
         materialMapper.insertMaterial(material);
         macMapper.insertMaterialAndChapter(mac);
     }
 
-    @Transactional
+    @Transactional(value = "transactionManager")
     @Override
     public void updateMaterialName(String name, String id) {
         materialMapper.updateMaterialNameById(name, id);
     }
 
-    @Transactional
+    @Transactional(value = "transactionManager")
     @Override
     public void deleteMaterial(String id) {
         materialMapper.deleteMaterialById(id);

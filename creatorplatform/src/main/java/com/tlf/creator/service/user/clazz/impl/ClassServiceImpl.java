@@ -65,7 +65,7 @@ public class ClassServiceImpl implements IClassService {
         return list;
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(value = "transactionManager1",rollbackFor = Exception.class)
     @Override
     public boolean insertClass(Classes classes, List<String> students)  {
         List<Classes> classes1 = classMapper.selectAllClassName();
@@ -85,7 +85,7 @@ public class ClassServiceImpl implements IClassService {
         return true;
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(value = "transactionManager1",rollbackFor = Exception.class)
     @Override
     public void deleteClass(String id) {
         Classes classes = classMapper.selectClassById(id);
@@ -97,7 +97,7 @@ public class ClassServiceImpl implements IClassService {
         classMapper.deleteClass(id);
     }
 
-    @Transactional(rollbackFor = Exception.class)
+    @Transactional(value = "transactionManager1",rollbackFor = Exception.class)
     @Override
     public boolean updateClass(Classes classes, List<String> add, List<String> delete)  {
         List<Classes> classes1 = classMapper.selectClassNameExcludeSelf(classes.getId());

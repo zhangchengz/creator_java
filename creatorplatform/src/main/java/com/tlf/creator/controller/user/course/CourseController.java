@@ -4,7 +4,7 @@ import com.tlf.creator.common.JsonResult;
 import com.tlf.creator.common.Constants;
 import com.tlf.creator.entity.user.course.CourseTeacherClass;
 import com.tlf.creator.entity.user.course.Courses;
-import com.tlf.creator.permission.AuthToken;
+import com.tlf.creator.aspect.AuthToken;
 import com.tlf.creator.po.CourseTeacherClassPO;
 import com.tlf.creator.req.CouReq;
 import com.tlf.creator.service.user.course.ICoursesService;
@@ -16,6 +16,7 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping
+@CrossOrigin
 public class CourseController {
 
     @Autowired

@@ -44,7 +44,7 @@ public class MybatisDbAConfig {
         return template;
     }
 
-    @Bean
+    @Bean("transactionManager1")
     public PlatformTransactionManager transactionManager1(@Qualifier("creatoraccount") DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
     }

@@ -1,7 +1,8 @@
 package com.tlf.creator.service.curriculum.resource.impl;
 
 import com.tlf.creator.common.Constants;
-import com.tlf.creator.config.DS;
+import com.tlf.creator.aspect.DS;
+import com.tlf.creator.config.UploadPathBean;
 import com.tlf.creator.dao.curriculum.resource.ResourceMapper;
 import com.tlf.creator.dao.curriculum.simulation.SimulationResourceMapper;
 import com.tlf.creator.entity.curriculum.resource.Resources;
@@ -21,6 +22,9 @@ public class ResourceServiceImpl implements IResourceService {
 
     @Autowired
     private SimulationResourceMapper simMapper;
+
+    @Autowired
+    private UploadPathBean uploadPathBean;
 
     @Override
     @DS
@@ -49,7 +53,7 @@ public class ResourceServiceImpl implements IResourceService {
         if (resource != null) {
             map.put("path", Constants.RESOURCE_PATH + resource.getPath());
         } else if (simulationResource != null) {
-            map.put("path", Constants.RESOURCE_PATH + simulationResource.getPath());
+            map.put("path", uploadPathBean.getDownloadPath() + simulationResource.getPath());
         }
         return map;
     }

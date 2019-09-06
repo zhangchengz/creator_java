@@ -5,7 +5,7 @@ import com.tlf.creator.common.Constants;
 import com.tlf.creator.entity.user.account.Accounts;
 import com.tlf.creator.entity.user.clazz.Classes;
 import com.tlf.creator.entity.user.course.Courses;
-import com.tlf.creator.permission.AuthToken;
+import com.tlf.creator.aspect.AuthToken;
 import com.tlf.creator.po.ClassPO;
 import com.tlf.creator.po.OnlinePO;
 import com.tlf.creator.req.*;
@@ -24,6 +24,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping
+@CrossOrigin
 public class AccountController {
 
     @Autowired
@@ -61,6 +62,7 @@ public class AccountController {
             Long millis = System.currentTimeMillis();
             onlineService.updateLoginByAccount(millis,account.toString());
         }
+        map.remove("accountId");
         return new JsonResult(Constants.CODE_SUCCESS,"SUCCESS",null,map);
     }
 

@@ -11,6 +11,26 @@ public class UploadPathBean {
 
     private String downloadPath;
 
+    private String documentUpload;
+
+    private String documentDownload;
+
+    public String getDocumentUpload() {
+        return documentUpload;
+    }
+
+    public void setDocumentUpload(String documentUpload) {
+        this.documentUpload = documentUpload;
+    }
+
+    public String getDocumentDownload() {
+        return documentDownload;
+    }
+
+    public void setDocumentDownload(String documentDownload) {
+        this.documentDownload = documentDownload;
+    }
+
     public String getDownloadPath() {
         return downloadPath;
     }

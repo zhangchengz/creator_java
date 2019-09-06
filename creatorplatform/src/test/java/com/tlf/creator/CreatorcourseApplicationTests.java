@@ -10,6 +10,7 @@ import com.tlf.creator.entity.curriculum.coursestudy.Unit;
 import com.tlf.creator.entity.curriculum.simulation.SceneType;
 import com.tlf.creator.entity.curriculum.training.Training;
 import com.tlf.creator.req.TrainingReq;
+import org.apache.shiro.crypto.hash.SimpleHash;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,12 +59,9 @@ public class CreatorcourseApplicationTests {
 
     @Test
     public void testCase2(){
-        Unit unit = new Unit();
-        String id = UUID.randomUUID().toString();
-        unit.setId(id);
-        unit.setName("第一节 unit①");
-        unit.setChapterId("d933914d-8c02-4ac8-a33f-3c7aa4258660");
-        unitMapper.insertUnit(unit);
+        String id = "7ca40be8-d057-11e9-95c3-525400f44460";
+        String password = new SimpleHash("MD5", "123456", id.substring(id.length() - 6)).toHex();
+        System.out.println(password);
     }
 
     @Test

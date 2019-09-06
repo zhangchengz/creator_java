@@ -108,7 +108,7 @@ public class CoursesServiceImpl implements ICoursesService {
         courseMapper.updateCourseDescriptionById(description, id);
     }
 
-    @Transactional
+    @Transactional(value = "transactionManager1")
     @Override
     public boolean insertCourse(CourseTeacherClass course) {
         int insert = ctcMapper.insert(course);
@@ -149,7 +149,7 @@ public class CoursesServiceImpl implements ICoursesService {
         return list;
     }
 
-    @Transactional
+    @Transactional(value = "transactionManager1")
     @Override
     public boolean deleteCourse(String id) {
         int delete = ctcMapper.deleteByPrimaryKey(id);
@@ -174,7 +174,7 @@ public class CoursesServiceImpl implements ICoursesService {
         return integer;
     }
 
-    @Transactional
+    @Transactional(value = "transactionManager1")
     @Override
     public void modifyTeacherAndClass(Courses course, List<String> teachers, List<String> classId) {
 

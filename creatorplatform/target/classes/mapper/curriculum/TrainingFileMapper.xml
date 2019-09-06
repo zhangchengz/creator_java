@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tlf.creator.dao.curriculum.training.TrainingFileMapper" >
+
+  <resultMap id="BaseResultMap" type="com.tlf.creator.entity.curriculum.training.TrainingFile" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="created_at" property="createdAt" jdbcType="TIMESTAMP" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    <result column="deleted_at" property="deletedAt" jdbcType="TIMESTAMP" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="path" property="path" jdbcType="VARCHAR" />
+    <result column="size" property="size" jdbcType="VARCHAR" />
+    <result column="type_id" property="typeId" jdbcType="VARCHAR" />
+    <result column="suffix" property="suffix" jdbcType="VARCHAR" />
+    <result column="quote" property="quote" jdbcType="INTEGER" />
+    <result column="training_id" property="trainingId" jdbcType="VARCHAR" />
+    <result column="training_pattern" property="trainingPattern" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    id, created_at, updated_at, deleted_at, name, path, size, type_id, suffix, quote, 
+    training_id, training_pattern, type
+  </sql>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from training_file
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectByTrainingId" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from training_file
+    where training_id = #{trainingId,jdbcType=VARCHAR} and deleted_at is null
+  </select>
+
+  <select id="selectFileByTrainingInner" resultMap="BaseResultMap">
+    SELECT
+    training_file.id,
+    training_file.`name`,
+    training_file.path,
+    training_file.size,
+    training_file.suffix,
+    training_file.training_id
+    FROM
+    training_file ,
+    training
+    WHERE
+    training_file.training_id = training.id AND
+    training_file.deleted_at is null AND
+    training.deleted_at is null AND
+    training.innerr = 1
+  </select>
+
+  <select id="selectFileByTrainingSelf" resultMap="BaseResultMap">
+    SELECT
+    training_file.id,
+    training_file.`name`,
+    training_file.path,
+    training_file.size,
+    training_file.suffix,
+    training_file.training_id
+    FROM
+    training_file ,
+    training ,
+    training_module
+    WHERE
+    training_file.training_id = training.id AND
+    training.module_id = training_module.id AND
+    training_file.deleted_at IS null AND
+    training.deleted_at IS null AND
+    training_module.visible = 0 AND
+    training.innerr = 0 AND
+    training.creator_id = #{creatorId}
+  </select>
+
+  <update id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    update training_file set deleted_at = now()
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <insert id="insert" parameterType="com.tlf.creator.entity.curriculum.training.TrainingFile" >
+    insert into training_file (id, created_at, updated_at, deleted_at, name, path,
+      size, type_id, suffix, quote, training_id, training_pattern, type)
+    values (#{id,jdbcType=VARCHAR}, now(), now(),
+      null, #{name,jdbcType=VARCHAR}, #{path,jdbcType=VARCHAR},
+      #{size,jdbcType=VARCHAR}, #{typeId,jdbcType=VARCHAR}, #{suffix,jdbcType=VARCHAR}, 
+      0, #{trainingId,jdbcType=VARCHAR}, #{trainingPattern,jdbcType=VARCHAR},
+      #{type,jdbcType=VARCHAR})
+  </insert>
+
+  <update id="updateByPrimaryKey" parameterType="com.tlf.creator.entity.curriculum.training.TrainingFile" >
+    update training_file set
+    training_id = #{trainingId,jdbcType=VARCHAR},
+    training_pattern = #{trainingPattern,jdbcType=VARCHAR},
+    type = #{type,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+  <update id="updateQuote" >
+    update training_file set
+    quote = quote+1
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

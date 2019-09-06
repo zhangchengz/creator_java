@@ -79,7 +79,7 @@ public class AccountServiceImpl implements IAccountService {
                         TeacherPO teacherPO = new TeacherPO(account.getId(), account.getPhone(), account.getName(), account.getGender(), account.getAge(), account.getEmail(), roles.getName(), null);
                         map.put("account", teacherPO);
                     }
-                } else if (roles.getName().equals("admin")) {
+                } else if (roles.getName().equals("admin")||roles.getName().equals("product")) {
                     AdminPO adminPO = new AdminPO(account.getId(), account.getName(), account.getPhone(), roles.getName());
                     map.put("account", adminPO);
                 }

@@ -1,6 +1,6 @@
 package com.tlf.creator.service.curriculum.training.impl;
 
-import com.tlf.creator.config.DS;
+import com.tlf.creator.aspect.DS;
 import com.tlf.creator.config.UploadPathBean;
 import com.tlf.creator.dao.curriculum.training.TrainingFileMapper;
 import com.tlf.creator.dao.curriculum.training.TrainingMapper;
@@ -60,6 +60,9 @@ public class TrainingFileServiceImpl implements TrainingFileService {
     @DS
     public TrainingFile selectByPrimaryKey(String courseId, String id) {
         TrainingFile trainingFile = trainingFileMapper.selectByPrimaryKey(id);
+        if (trainingFile != null) {
+            trainingFile.setPath(uploadPathBean.getDownloadPath() + trainingFile.getPath());
+        }
         return trainingFile;
     }
 
@@ -67,6 +70,11 @@ public class TrainingFileServiceImpl implements TrainingFileService {
     @DS
     public List<TrainingFile> selectByTrainingId(String courseId, String trainingId) {
         List<TrainingFile> trainingFiles = trainingFileMapper.selectByTrainingId(trainingId);
+        for (TrainingFile file : trainingFiles) {
+            if (file != null) {
+                file.setPath(uploadPathBean.getDownloadPath() + file.getPath());
+            }
+        }
         return trainingFiles;
     }
 
@@ -78,8 +86,10 @@ public class TrainingFileServiceImpl implements TrainingFileService {
         for (Training training : trainings) {
             if (training != null) {
                 List<TrainingFile> list1 = trainingFileMapper.selectByTrainingId(training.getId());
-                for(TrainingFile file :list){
-                    file.setPath(uploadPathBean.getDownloadPath()+file.getPath());
+                for (TrainingFile file : list) {
+                    if (file != null) {
+                        file.setPath(uploadPathBean.getDownloadPath() + file.getPath());
+                    }
                 }
                 list.addAll(list1);
             }
@@ -91,8 +101,10 @@ public class TrainingFileServiceImpl implements TrainingFileService {
     @DS
     public List<TrainingFile> selectByTrainingInner(String courseId) {
         List<TrainingFile> list = trainingFileMapper.selectFileByTrainingInner();
-        for(TrainingFile file :list){
-            file.setPath(uploadPathBean.getDownloadPath()+file.getPath());
+        for (TrainingFile file : list) {
+            if (file != null) {
+                file.setPath(uploadPathBean.getDownloadPath() + file.getPath());
+            }
         }
         return list;
     }
@@ -101,8 +113,10 @@ public class TrainingFileServiceImpl implements TrainingFileService {
     @DS
     public List<TrainingFile> selectByTrainingSelf(String courseId, String creatorId) {
         List<TrainingFile> list = trainingFileMapper.selectFileByTrainingSelf(creatorId);
-        for(TrainingFile file :list){
-            file.setPath(uploadPathBean.getDownloadPath()+file.getPath());
+        for (TrainingFile file : list) {
+            if (file != null) {
+                file.setPath(uploadPathBean.getDownloadPath() + file.getPath());
+            }
         }
         return list;
     }

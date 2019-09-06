@@ -1,21 +1,21 @@
 package com.tlf.creator.controller.curriculum.coursestudy;
 
+import com.tlf.creator.aspect.AuthToken;
+import com.tlf.creator.common.Constants;
 import com.tlf.creator.common.JsonResult;
 import com.tlf.creator.config.UploadPathBean;
-import com.tlf.creator.common.Constants;
 import com.tlf.creator.entity.curriculum.training.Training;
 import com.tlf.creator.entity.curriculum.training.TrainingFile;
 import com.tlf.creator.entity.user.course.Courses;
 import com.tlf.creator.exception.OperatingException;
-import com.tlf.creator.permission.AuthToken;
 import com.tlf.creator.req.CourseReq;
 import com.tlf.creator.req.TrainingResourceReq;
-import com.tlf.creator.service.curriculum.training.TrainingFileService;
-import com.tlf.creator.service.curriculum.training.TrainingService;
-import com.tlf.creator.service.user.course.ICoursesService;
 import com.tlf.creator.service.curriculum.material.IChapterService;
 import com.tlf.creator.service.curriculum.material.IMaterialService;
 import com.tlf.creator.service.curriculum.material.IUnitService;
+import com.tlf.creator.service.curriculum.training.TrainingFileService;
+import com.tlf.creator.service.curriculum.training.TrainingService;
+import com.tlf.creator.service.user.course.ICoursesService;
 import com.tlf.creator.utils.AccountUtil;
 import com.tlf.creator.vo.ModuleTrainVO;
 import org.apache.commons.lang3.StringUtils;
@@ -29,6 +29,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping
+@CrossOrigin
 public class CourseStudyController {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());

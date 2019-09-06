@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tlf.creator.dao.curriculum.training.TrainingSimMapper" >
+
+  <resultMap id="BaseResultMap" type="com.tlf.creator.entity.curriculum.training.TrainingSim" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="created_at" property="createdAt" jdbcType="VARCHAR" />
+    <result column="updated_at" property="updatedAt" jdbcType="TIMESTAMP" />
+    <result column="deleted_at" property="deletedAt" jdbcType="VARCHAR" />
+    <result column="training_id" property="trainingId" jdbcType="VARCHAR" />
+    <result column="sim_id" property="simId" jdbcType="VARCHAR" />
+    <result column="mode" property="mode" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <resultMap id="TrainingSimResultMap" type="com.tlf.creator.po.TrainingSimPO">
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="training_id" property="trainingId" jdbcType="VARCHAR" />
+    <result column="sim_id" property="simId" jdbcType="VARCHAR" />
+    <result column="mode" property="mode" jdbcType="VARCHAR" />
+    <result column="type_name" property="typeName" jdbcType="VARCHAR" />
+    <result column="alias" property="alias" jdbcType="VARCHAR" />
+    <result column="path" property="path" jdbcType="VARCHAR" />
+    <result column="sim_name" property="simName" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    id, created_at, updated_at, deleted_at, training_id, sim_id, mode
+  </sql>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from training_sim
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+
+  <select id="selectByTrainingId" resultMap="TrainingSimResultMap" parameterType="java.lang.String" >
+   SELECT
+      training_sim.id,
+      training_sim.training_id,
+      training_sim.sim_id,
+      training_sim.`mode`,
+      scene_type.`name` type_name,
+      scene_type.alias,
+      simulation_resource.path,
+      simulation_resource.`name` sim_name
+      FROM
+      simulation_resource ,
+      scene_type ,
+      training_sim
+      WHERE
+      training_sim.deleted_at is null AND
+      simulation_resource.deleted_at is null and
+      training_sim.sim_id = simulation_resource.id AND
+      simulation_resource.type_id = scene_type.id AND
+      training_sim.training_id =  #{trainingId,jdbcType=VARCHAR}
+  </select>
+  
+  <update id="deleteByTrainingAndSim" >
+    update training_sim set deleted_at = now() where training_id = #{trainingId} and sim_id = #{simId}
+  </update>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from training_sim
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+
+  <insert id="insert" parameterType="com.tlf.creator.entity.curriculum.training.TrainingSim" >
+    insert into training_sim (id, created_at, updated_at, deleted_at, training_id, sim_id, mode)
+    values (
+          #{id,jdbcType=VARCHAR}, now(), now(),null ,
+          #{trainingId,jdbcType=VARCHAR}, #{simId,jdbcType=VARCHAR},#{mode,jdbcType=VARCHAR}
+           )
+  </insert>
+  
+  <insert id="bulkInsert" parameterType="java.util.List" >
+    insert into training_sim (id, created_at, updated_at,deleted_at, training_id, sim_id,mode)
+    values
+    <foreach collection="list" item="trainingSim" index="index" separator=",">
+      (
+      #{trainingSim.id},now(),now(),null,
+      #{trainingSim.trainingId},#{trainingSim.simId},#{trainingSim.mode}
+      )
+    </foreach>
+  </insert>
+
+  <update id="updateByPrimaryKey" parameterType="com.tlf.creator.entity.curriculum.training.TrainingSim" >
+    update training_sim
+    set training_id = #{trainingId,jdbcType=VARCHAR},
+      sim_id = #{simId,jdbcType=VARCHAR},
+      mode = #{mode,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+
+</mapper>

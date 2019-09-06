@@ -3,7 +3,7 @@ package com.tlf.creator.service.curriculum.training.impl;
 import cn.hutool.core.io.FileUtil;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.tlf.creator.config.DS;
+import com.tlf.creator.aspect.DS;
 import com.tlf.creator.config.UploadPathBean;
 import com.tlf.creator.dao.curriculum.simulation.SimulationResourceMapper;
 import com.tlf.creator.dao.curriculum.training.*;
@@ -23,6 +23,7 @@ import com.tlf.creator.vo.TrainingVO;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -55,7 +56,18 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Override
     @DS
+    @Transactional(value = "transactionManager")
     public boolean deleteByPrimaryKey(String courseId, String id) {
+        List<TrainingFile> list = fileMapper.selectByTrainingId(id);
+        for(TrainingFile trainingFile:list){
+            if(trainingFile!=null){
+                fileMapper.deleteByPrimaryKey(trainingFile.getId());
+                File file = new File(uploadPathBean.getUploadPath()+trainingFile.getPath());
+                if(file.exists()){
+                    file.delete();
+                }
+            }
+        }
         int delete = trainingMapper.deleteByPrimaryKey(id);
         if (delete > 0) {
             return true;
@@ -71,18 +83,21 @@ public class TrainingServiceImpl implements TrainingService {
     }
 
     @Override
+    @DS
     public int selectCountInner(String courseId, TrainingReq req) {
         int countInner = trainingMapper.selectCountInner(req);
         return countInner;
     }
 
     @Override
+    @DS
     public List<Training> selectTrainingByTeacher(String courseId, TrainingReq req) {
         List<Training> trainings = trainingMapper.selectTrainingByTeacher(req);
         return trainings;
     }
 
     @Override
+    @DS
     public int selectCountSelf(String courseId, TrainingReq req) {
         int countSelf = trainingMapper.selectCountSelf(req);
         return countSelf;
@@ -92,6 +107,10 @@ public class TrainingServiceImpl implements TrainingService {
     @Override
     @DS
     public boolean insert(String courseId, Training record) {
+        TrainingModule trainingModule = moduleMapper.selectAllNotVisible();
+        if(record!=null&&StringUtils.isBlank(record.getModuleId())){
+            record.setModuleId(trainingModule.getId());
+        }
         int insert = trainingMapper.insert(record);
         if (insert > 0) {
             return true;
@@ -123,12 +142,16 @@ public class TrainingServiceImpl implements TrainingService {
         for (TrainingFile trainingFile : trainingFiles) {
             if (trainingFile != null) {
                 if (FileTypeEnum.GUIDE.toString().equals(trainingFile.getType())) {
+                    trainingFile.setPath(uploadPathBean.getDownloadPath()+trainingFile.getPath());
                     guide.add(trainingFile);
                 } else if (FileTypeEnum.ANNEX.toString().equals(trainingFile.getType())) {
+                    trainingFile.setPath(uploadPathBean.getDownloadPath()+trainingFile.getPath());
                     annex.add(trainingFile);
                 } else if (FileTypeEnum.MATERIAL.toString().equals(trainingFile.getType())) {
+                    trainingFile.setPath(uploadPathBean.getDownloadPath()+trainingFile.getPath());
                     material.add(trainingFile);
                 } else if (FileTypeEnum.REPORT.toString().equals(trainingFile.getType())) {
+                    trainingFile.setPath(uploadPathBean.getDownloadPath()+trainingFile.getPath());
                     report.add(trainingFile);
                 }
             }
@@ -140,8 +163,10 @@ public class TrainingServiceImpl implements TrainingService {
         for (TrainingSimPO trainingSimPO : trainingSimPOS) {
             if (trainingSimPO != null) {
                 if (ModeEnum.PRACTICE.toString().equals(trainingSimPO.getMode())) {
+                    trainingSimPO.setPath(uploadPathBean.getDownloadPath()+trainingSimPO.getPath());
                     practiceSim.add(trainingSimPO);
                 } else if (ModeEnum.EXAM.toString().equals(trainingSimPO.getMode())) {
+                    trainingSimPO.setPath(uploadPathBean.getDownloadPath()+trainingSimPO.getPath());
                     examSim.add(trainingSimPO);
                 }
             }
@@ -192,7 +217,7 @@ public class TrainingServiceImpl implements TrainingService {
                 }
             }
             //如果传过来的指导书id为空，删除掉原有的指导书
-            if (req.getGuide() == null || req.getGuide().isEmpty()) {
+            if (req.getGuide() == null || req.getGuide().isEmpty()||req.getGuide().size()==0) {
                 for (String id : guideList) {
                     TrainingFile trainingFile = fileMapper.selectByPrimaryKey(id);
                     if (trainingFile != null) {
@@ -378,7 +403,7 @@ public class TrainingServiceImpl implements TrainingService {
                             String suffix = FileUtil.extName(file);
                             String sub = path.substring(0, path.lastIndexOf(".") - 36);
                             File file1 = new File(uploadPathBean.getUploadPath() + sub + simulationResourceId + "." + suffix);
-                            File copy = FileUtil.copy(file, file1, false);
+                            FileUtil.copy(file, file1, false);
                             simulationResource.setId(simulationResourceId);
                             simulationResource.setInner(false);
                             simulationResource.setName(simulationResource.getName());
@@ -534,6 +559,7 @@ public class TrainingServiceImpl implements TrainingService {
     }
 
     @Override
+    @DS
     public List<Training> selectAllTrainingByTeacher(String courseId, String creatorId) {
         TrainingModule trainingModule = moduleMapper.selectAllNotVisible();
         if (trainingModule != null) {

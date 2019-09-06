@@ -1,13 +1,13 @@
 package com.tlf.creator.controller.curriculum.component;
 
 import cn.hutool.core.io.FileTypeUtil;
+import com.tlf.creator.aspect.AuthToken;
+import com.tlf.creator.common.Constants;
 import com.tlf.creator.common.JsonResult;
 import com.tlf.creator.config.UploadPathBean;
-import com.tlf.creator.common.Constants;
 import com.tlf.creator.entity.curriculum.component.Component;
 import com.tlf.creator.entity.curriculum.component.ComponentGroup;
 import com.tlf.creator.exception.OperatingException;
-import com.tlf.creator.permission.AuthToken;
 import com.tlf.creator.po.ComponentPO;
 import com.tlf.creator.req.ComponentReq;
 import com.tlf.creator.service.curriculum.component.IComponentService;

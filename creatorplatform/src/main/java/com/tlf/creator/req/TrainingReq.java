@@ -23,7 +23,15 @@ public class TrainingReq extends PageReq{
     private List<String> report;
     private List<String> examSim;
     private String trainingModuleName;
+    private String trainingTypeName;
 
+    public String getTrainingTypeName() {
+        return trainingTypeName;
+    }
+
+    public void setTrainingTypeName(String trainingTypeName) {
+        this.trainingTypeName = trainingTypeName;
+    }
 
     public String getTrainingModuleName() {
         return trainingModuleName;
