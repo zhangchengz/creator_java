@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cubespace.relaying.dao.UserMapper">
+
+    <resultMap id="BaseResultMap" type="com.cubespace.relaying.entity.User">
+        <id column="id" property="id" javaType="java.lang.String"/>
+        <result column="created_at" property="createdAt" javaType="java.sql.Timestamp"/>
+        <result column="updated_at" property="updatedAt" javaType="java.sql.Timestamp"/>
+        <result column="deleted_at" property="deletedAt" javaType="java.sql.Timestamp"/>
+        <result column="number" property="number" javaType="java.lang.String"/>
+        <result column="pwd" property="pwd" javaType="java.lang.String"/>
+        <result column="name" property="name" javaType="java.lang.String"/>
+        <result column="role" property="role" javaType="java.lang.String"/>
+    </resultMap>
+
+    <select id="selectByNumber" resultMap="BaseResultMap">
+        select id, number, pwd, name,role from user where deleted_at is null and number = #{number}
+    </select>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        select id, number, pwd, name,role from user where deleted_at is null and id = #{id}
+    </select>
+
+    <update id="updatePwdById">
+        update user set pwd = #{pwd} where id = #{id}
+    </update>
+
+    <select id="selectAllStudents" resultMap="BaseResultMap">
+        select id,number from user where deleted_at is null and role = 'student' order by number
+    </select>
+
+</mapper>
